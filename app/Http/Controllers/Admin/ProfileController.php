@@ -20,21 +20,33 @@ class ProfileController extends Controller
         $form = $request->all();
         
         unset($form['_token']);
-        unset($form['image']);
         
         $Profiles->fill($form);
         $Profiles->save();
         return redirect('admin/profile/create');
     }
 
-    public function edit()
-    {
-        return view('admin.profile.edit');
+    public function edit(Request $request){
+        $Profiles = profiles::find($request->id);
+        if (empty($Profiles)) {
+            abort(404);
+        }
+        return view('admin.profile.edit', ['profiles_form' => $Profiles]);
     }
 
-    public function update()
+    public function update(Request $request)
     {
-        return redirect('admin/profile/edit');
+        $this->validate($request, profiles::$rules);
+        
+        $Profiles = profiles::find($request->id);
+        
+        $profiles_form = $request->all();
+        
+        unset($profiles_form['_token']);
+        
+        $Profiles->fill($profiles_form)->save();
+        
+        return redirect('admin/profile/create');
     }
     
 }
